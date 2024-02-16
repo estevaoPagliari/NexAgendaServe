@@ -19,7 +19,7 @@ const appointments: Appointment[] = [
     time: '09:00',
     clientName: 'Maria',
     service: 'Corte de cabelo',
-    timeservice: '01:00',
+    timeservice: '60',
   },
   {
     dia: '15',
@@ -27,7 +27,7 @@ const appointments: Appointment[] = [
     time: '10:30',
     clientName: 'João',
     service: 'Barba',
-    timeservice: '01:00',
+    timeservice: '60',
   },
   {
     dia: '15',
@@ -35,7 +35,7 @@ const appointments: Appointment[] = [
     time: '13:00',
     clientName: 'Ana',
     service: 'Coloração',
-    timeservice: '01:30',
+    timeservice: '90',
   },
   {
     dia: '15',
@@ -43,7 +43,7 @@ const appointments: Appointment[] = [
     time: '14:30',
     clientName: 'Estevao',
     service: 'Coloração',
-    timeservice: '01:30',
+    timeservice: '60',
   },
   { dia: '14', mes: '2', time: '18:00', clientName: 'Yuri', service: 'Corte' },
   {
@@ -52,7 +52,7 @@ const appointments: Appointment[] = [
     time: '16:00',
     clientName: 'José',
     service: 'Corte e Barba',
-    timeservice: '01:00',
+    timeservice: '30',
   },
   {
     dia: '15',
@@ -60,7 +60,7 @@ const appointments: Appointment[] = [
     time: '18:00',
     clientName: 'Yuri',
     service: 'Corte e Barba',
-    timeservice: '01:00',
+    timeservice: '60',
   },
   {
     dia: '16',
@@ -68,7 +68,7 @@ const appointments: Appointment[] = [
     time: '17:00',
     clientName: 'MARCOS',
     service: 'Corte',
-    timeservice: '01:00',
+    timeservice: '60',
   },
   {
     dia: '17',
@@ -76,7 +76,7 @@ const appointments: Appointment[] = [
     time: '15:00',
     clientName: 'DUDU',
     service: 'UNHA',
-    timeservice: '00:30',
+    timeservice: '30',
   },
 ]
 
