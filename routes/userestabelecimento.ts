@@ -8,8 +8,7 @@ export async function userEstRoutes(app: FastifyInstance) {
     try {
       const users = await prisma.userEstabelecimento.findMany({
         include: {
-          tiposservicos: true,
-          Agendamento: true,
+          Endereco: true,
         },
       })
       return reply.code(200).send(users)
@@ -42,8 +41,8 @@ export async function userEstRoutes(app: FastifyInstance) {
           id,
         },
         include: {
-          tiposservicos: true,
-          Agendamento: true,
+          TipoServico: true,
+          Endereco: true,
         },
       })
 
@@ -63,24 +62,52 @@ export async function userEstRoutes(app: FastifyInstance) {
   // criar user
   app.post('/userestabelecimento', async (request, reply) => {
     try {
-      // Validar o corpo da solicitação
-      const bodySchema = z.object({
+      // Validar o corpo da solicitação para o usuário
+      const userSchema = z.object({
         email: z.string().email(), // Validar se é um email válido
         nome: z.string(),
-        telefone: z.string(),
+        senha: z.string(),
+        cpf: z.number(),
+        telefone: z.number(),
+        endereco: z.object({
+          estado: z.string(),
+          cidade: z.string(),
+          rua: z.string(),
+          numero: z.string(),
+          complemento: z.string().optional(),
+          cep: z.string(),
+        }),
       })
-      const { email, nome, telefone } = bodySchema.parse(request.body)
 
-      // Criar um novo usuário no banco de dados
+      const { email, nome, senha, cpf, telefone, endereco } = userSchema.parse(
+        request.body,
+      )
+
+      // Criar o novo usuário e o endereço no banco de dados
       const newUser = await prisma.userEstabelecimento.create({
         data: {
           email,
           nome,
+          senha,
+          cpf,
           telefone,
+          Endereco: {
+            create: {
+              estado: endereco.estado,
+              cidade: endereco.cidade,
+              rua: endereco.rua,
+              numero: endereco.numero,
+              complemento: endereco.complemento,
+              cep: endereco.cep,
+            },
+          },
+        },
+        include: {
+          Endereco: true,
         },
       })
 
-      // Enviar resposta com o novo usuário criado
+      // Enviar resposta com o novo usuário e endereço criados
       return reply.code(201).send(newUser)
     } catch (error) {
       console.error('Erro ao criar usuário:', error)
@@ -88,7 +115,7 @@ export async function userEstRoutes(app: FastifyInstance) {
       reply.code(400).send({ message: 'Erro ao criar usuário.' })
     }
   })
-
+  // Alterar user
   app.patch('/userestabelecimento/:iduser', async (request, reply) => {
     try {
       // Validar parâmetros da solicitação
@@ -99,6 +126,7 @@ export async function userEstRoutes(app: FastifyInstance) {
 
       // Converter o ID para número
       const id = parseInt(iduser)
+      console.log(id)
 
       // Verificar se o ID é um número válido
       if (isNaN(id)) {
@@ -107,11 +135,15 @@ export async function userEstRoutes(app: FastifyInstance) {
 
       // Validar corpo da solicitação
       const bodySchema = z.object({
-        email: z.string().optional(),
         nome: z.string().optional(),
-        telefone: z.string().optional(),
+        email: z.string().email().optional(), // Validar se é um email válido
+        senha: z.string().optional(),
+        cpf: z.number().optional(),
+        telefone: z.number().optional(),
       })
-      const { email, nome, telefone } = bodySchema.parse(request.body)
+      const { nome, email, senha, cpf, telefone } = bodySchema.parse(
+        request.body,
+      )
 
       // Atualizar o usuário com base no ID fornecido
       const updatedUser = await prisma.userEstabelecimento.update({
@@ -121,7 +153,12 @@ export async function userEstRoutes(app: FastifyInstance) {
         data: {
           email,
           nome,
+          senha,
+          cpf,
           telefone,
+        },
+        include: {
+          Endereco: true,
         },
       })
 
@@ -138,7 +175,7 @@ export async function userEstRoutes(app: FastifyInstance) {
       return reply.code(400).send({ message: 'Erro ao atualizar usuário.' })
     }
   })
-
+  // Deletar user
   app.delete('/userestabelecimento/:iduser', async (request, reply) => {
     try {
       // Validar parâmetros da solicitação

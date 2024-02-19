@@ -10,41 +10,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Define o modelo para a entidade UsuarioEmpresa
 model UserEstabelecimento {
-  id           Int            @id @default(autoincrement())
-  email        String         @unique
-  nome         String
-  telefone     String
-  tiposservico TiposServico[] // Um estabelecimento pode ter nenhum ou vários tipos de serviço
-  agendamento  Agendamento[] // Um estabelecimento pode ter nenhum ou vários agendamentos de clientes diferentes
-}
-
-model TiposServico {
-  id                    Int                 @id @default(autoincrement())
-  name                  String
-  timeservice           String // Tempo de serviço
-  userEstabelecimento   UserEstabelecimento @relation(fields: [userEstabelecimentoId], references: [id]) // Um tipo de serviço pertence a um estabelecimento
-  agendamento           Agendamento[] // Um cliente pode selecionar o serviço em um horário disponível
-  userEstabelecimentoId Int
-}
-
-model UserCliente {
   id          Int           @id @default(autoincrement())
   nome        String
   email       String        @unique
-  telefone    String
-  agendamento Agendamento[] // Um cliente pode ter nenhum ou vários agendamentos com um estabelecimento e um serviço
+  senha       String
+  cpf         Int           @unique
+  telefone    Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Endereco    Endereco[]
+  TipoServico TipoServico[]
 }
 
-model Agendamento {
+// Define o modelo para a entidade Endereco
+model Endereco {
+  id               Int                  @id @default(autoincrement())
+  estado           String
+  cidade           String
+  rua              String
+  numero           String
+  complemento      String?
+  cep              String
+  usuarioEmpresaId Int?
+  UsuarioEmpresa   UserEstabelecimento? @relation(fields: [usuarioEmpresaId], references: [id])
+}
+
+// Define o modelo para a entidade Tipo Servico
+model TipoServico {
   id                    Int                 @id @default(autoincrement())
-  dia                   String
-  mes                   String
-  horario               DateTime
-  userEstabelecimento   UserEstabelecimento @relation(fields: [userEstabelecimentoId], references: [id])
-  userEstabelecimentoId Int
-  tiposServico          TiposServico        @relation(fields: [tiposServicoId], references: [id])
-  tiposServicoId        Int
-  userCliente           UserCliente         @relation(fields: [userClienteId], references: [id])
-  userClienteId         Int
+  nome                  String
+  tempoServico          Int
+  UserEstabelecimentoId Int
+  UserEstabelecimento   UserEstabelecimento @relation(fields: [UserEstabelecimentoId], references: [id])
 }

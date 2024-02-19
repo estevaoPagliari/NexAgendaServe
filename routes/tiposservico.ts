@@ -5,7 +5,7 @@ import { z } from 'zod'
 export async function tiposervicoRoutes(app: FastifyInstance) {
   app.get('/tiposervico', async (request, reply) => {
     try {
-      const users = await prisma.tiposServico.findMany({})
+      const users = await prisma.tipoServico.findMany({})
       return reply.code(200).send(users)
     } catch (error) {
       console.error('Erro ao buscar Servico:', error)
@@ -31,12 +31,12 @@ export async function tiposervicoRoutes(app: FastifyInstance) {
       }
 
       // Buscar o usuário no banco de dados
-      const usercliente = await prisma.tiposServico.findUnique({
+      const usercliente = await prisma.tipoServico.findUnique({
         where: {
           id,
         },
         include: {
-          userEstabelecimento: true,
+          UserEstabelecimento: true,
         },
       })
 
@@ -53,7 +53,7 @@ export async function tiposervicoRoutes(app: FastifyInstance) {
       reply.code(400).send({ message: 'Erro ao buscar servico.' })
     }
   })
-
+  /** ? 
   app.get('/tiposervicouser/:iduser', async (request, reply) => {
     try {
       const paramsSchema = z.object({
@@ -72,9 +72,9 @@ export async function tiposervicoRoutes(app: FastifyInstance) {
       }
 
       // Buscar o usuário no banco de dados
-      const usercliente = await prisma.tiposServico.findMany({
+      const usercliente = await prisma.tipoServico.findMany({
         where: {
-          userEstabelecimentoId,
+          UserEstabelecimentoId,
         },
       })
 
@@ -91,37 +91,30 @@ export async function tiposervicoRoutes(app: FastifyInstance) {
       reply.code(400).send({ message: 'Erro ao buscar servico.' })
     }
   })
+  */
 
-  app.post('/tiposervico', async (request, reply) => {
+  app.post('/tiposervico/:userestabelecimento', async (request, reply) => {
     try {
+      const paramsSchema = z.object({
+        userestabelecimento: z.string(),
+      })
+
+      const { userestabelecimento } = paramsSchema.parse(request.params)
+
+      const id = parseInt(userestabelecimento)
       // Validar o corpo da solicitação
       const bodySchema = z.object({
-        name: z.string(),
-        timeservice: z.string(),
-        userEstabelecimentoId: z.number(),
+        nome: z.string(),
+        tempoServico: z.number(),
       })
-      const { name, timeservice, userEstabelecimentoId } = bodySchema.parse(
-        request.body,
-      )
-
-      // Verificar se o usuário estabelecimento associado existe
-      const userEstabelecimento = await prisma.userEstabelecimento.findUnique({
-        where: {
-          id: userEstabelecimentoId,
-        },
-      })
-      if (!userEstabelecimento) {
-        return reply
-          .code(404)
-          .send({ message: 'Usuário estabelecimento não encontrado.' })
-      }
+      const { nome, tempoServico } = bodySchema.parse(request.body)
 
       // Criar um novo tipo de serviço associado ao usuário estabelecimento
-      const newTipoServico = await prisma.tiposServico.create({
+      const newTipoServico = await prisma.tipoServico.create({
         data: {
-          name,
-          timeservice,
-          userEstabelecimentoId,
+          nome,
+          tempoServico,
+          UserEstabelecimento: { connect: { id } },
         },
       })
 
@@ -152,19 +145,19 @@ export async function tiposervicoRoutes(app: FastifyInstance) {
 
       // Validar corpo da solicitação
       const bodySchema = z.object({
-        name: z.string().optional(),
-        timeservice: z.string().optional(),
+        nome: z.string().optional(),
+        tempoServico: z.number().optional(),
       })
-      const { name, timeservice } = bodySchema.parse(request.body)
+      const { nome, tempoServico } = bodySchema.parse(request.body)
 
       // Atualizar o usuário com base no ID fornecido
-      const updatedUser = await prisma.tiposServico.update({
+      const updatedUser = await prisma.tipoServico.update({
         where: {
           id,
         },
         data: {
-          name,
-          timeservice,
+          nome,
+          tempoServico,
         },
       })
 
@@ -199,7 +192,7 @@ export async function tiposervicoRoutes(app: FastifyInstance) {
       }
 
       // Excluir o usuário com base no ID fornecido
-      const deletedUser = await prisma.tiposServico.delete({
+      const deletedUser = await prisma.tipoServico.delete({
         where: {
           id,
         },

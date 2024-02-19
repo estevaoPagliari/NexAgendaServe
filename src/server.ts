@@ -2,9 +2,9 @@ import fastify, { FastifyInstance, RouteShorthandOptions } from 'fastify'
 import { RouteHandlerMethod } from 'fastify/types/route'
 import cors from '@fastify/cors'
 import { userEstRoutes } from '../routes/userestabelecimento'
-import { userCliRoutes } from '../routes/usercliente'
+// import { userCliRoutes } from '../routes/usercliente'
 import { tiposervicoRoutes } from '../routes/tiposservico'
-import { agendaservicoRoutes } from '../routes/agendaservico'
+// import { agendaservicoRoutes } from '../routes/agendaservico'
 // Importe o fastify-cors
 
 interface Appointment {
@@ -91,9 +91,9 @@ app.register(cors, {
 })
 
 app.register(userEstRoutes)
-app.register(userCliRoutes)
+// app.register(userCliRoutes)
 app.register(tiposervicoRoutes)
-app.register(agendaservicoRoutes)
+// app.register(agendaservicoRoutes)
 
 const options: RouteShorthandOptions = {
   schema: {
