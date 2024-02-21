@@ -9,6 +9,10 @@ export async function userEstRoutes(app: FastifyInstance) {
       const users = await prisma.userEstabelecimento.findMany({
         include: {
           Endereco: true,
+          Agenda: true,
+          HorarioFuncionamento: true,
+          Recursos: true,
+          TipoServico: true,
         },
       })
       return reply.code(200).send(users)
@@ -41,8 +45,11 @@ export async function userEstRoutes(app: FastifyInstance) {
           id,
         },
         include: {
-          TipoServico: true,
           Endereco: true,
+          Agenda: true,
+          HorarioFuncionamento: true,
+          Recursos: true,
+          TipoServico: true,
         },
       })
 
@@ -77,11 +84,23 @@ export async function userEstRoutes(app: FastifyInstance) {
           complemento: z.string().optional(),
           cep: z.string(),
         }),
+        horariofuncionamento: z.object({
+          horarioAbertura: z.string(),
+          horarioAlmocoInicio: z.string(),
+          horarioAlmocoFim: z.string(),
+          horarioFechamento: z.string(),
+        }),
       })
 
-      const { email, nome, senha, cpf, telefone, endereco } = userSchema.parse(
-        request.body,
-      )
+      const {
+        email,
+        nome,
+        senha,
+        cpf,
+        telefone,
+        endereco,
+        horariofuncionamento,
+      } = userSchema.parse(request.body)
 
       // Criar o novo usuário e o endereço no banco de dados
       const newUser = await prisma.userEstabelecimento.create({
@@ -101,9 +120,18 @@ export async function userEstRoutes(app: FastifyInstance) {
               cep: endereco.cep,
             },
           },
+          HorarioFuncionamento: {
+            create: {
+              horarioAbertura: horariofuncionamento.horarioAbertura,
+              horarioAlmocoInicio: horariofuncionamento.horarioAlmocoInicio,
+              horarioAlmocoFim: horariofuncionamento.horarioAlmocoFim,
+              horarioFechamento: horariofuncionamento.horarioFechamento,
+            },
+          },
         },
         include: {
           Endereco: true,
+          HorarioFuncionamento: true,
         },
       })
 

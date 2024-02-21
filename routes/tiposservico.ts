@@ -53,7 +53,7 @@ export async function tiposervicoRoutes(app: FastifyInstance) {
       reply.code(400).send({ message: 'Erro ao buscar servico.' })
     }
   })
-  /** ? 
+
   app.get('/tiposervicouser/:iduser', async (request, reply) => {
     try {
       const paramsSchema = z.object({
@@ -64,10 +64,10 @@ export async function tiposervicoRoutes(app: FastifyInstance) {
       const { iduser } = paramsSchema.parse(request.params)
 
       // Converter o ID para número
-      const userEstabelecimentoId = parseInt(iduser)
+      const UserEstabelecimentoId = parseInt(iduser)
 
       // Verificar se o ID é um número válido
-      if (isNaN(userEstabelecimentoId)) {
+      if (isNaN(UserEstabelecimentoId)) {
         throw new Error('O ID do usuario deve ser um número válido.')
       }
 
@@ -91,7 +91,6 @@ export async function tiposervicoRoutes(app: FastifyInstance) {
       reply.code(400).send({ message: 'Erro ao buscar servico.' })
     }
   })
-  */
 
   app.post('/tiposervico/:userestabelecimento', async (request, reply) => {
     try {

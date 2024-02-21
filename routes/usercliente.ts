@@ -8,7 +8,8 @@ export async function userCliRoutes(app: FastifyInstance) {
     try {
       const users = await prisma.userCliente.findMany({
         include: {
-          Agendamento: true,
+          Endereco: true,
+          Agenda: true,
         },
       })
       return reply.code(200).send(users)
@@ -17,6 +18,7 @@ export async function userCliRoutes(app: FastifyInstance) {
       return reply.code(500).send({ message: 'Erro ao buscar usuários.' })
     }
   })
+  // get id
   app.get('/usercliente/:iduser', async (request, reply) => {
     try {
       const paramsSchema = z.object({
@@ -39,6 +41,10 @@ export async function userCliRoutes(app: FastifyInstance) {
         where: {
           id,
         },
+        include: {
+          Agenda: true,
+          Endereco: true,
+        },
       })
 
       // Verificar se o usuário foi encontrado
@@ -54,26 +60,50 @@ export async function userCliRoutes(app: FastifyInstance) {
       reply.code(400).send({ message: 'Erro ao buscar usuário.' })
     }
   })
-  // get id
-
   // criar user
-
   app.post('/usercliente', async (request, reply) => {
     try {
       // Validar o corpo da solicitação
-      const bodySchema = z.object({
+      const userSchema = z.object({
         email: z.string().email(), // Validar se é um email válido
         nome: z.string(),
-        telefone: z.string(),
+        senha: z.string(),
+        cpf: z.number(),
+        telefone: z.number(),
+        endereco: z.object({
+          estado: z.string(),
+          cidade: z.string(),
+          rua: z.string(),
+          numero: z.string(),
+          complemento: z.string().optional(),
+          cep: z.string(),
+        }),
       })
-      const { email, nome, telefone } = bodySchema.parse(request.body)
+      const { email, nome, senha, cpf, telefone, endereco } = userSchema.parse(
+        request.body,
+      )
 
       // Criar um novo usuário no banco de dados
       const newUser = await prisma.userCliente.create({
         data: {
           email,
           nome,
+          senha,
+          cpf,
           telefone,
+          Endereco: {
+            create: {
+              estado: endereco.estado,
+              cidade: endereco.cidade,
+              rua: endereco.rua,
+              numero: endereco.numero,
+              complemento: endereco.complemento,
+              cep: endereco.cep,
+            },
+          },
+        },
+        include: {
+          Endereco: true,
         },
       })
 
@@ -104,11 +134,15 @@ export async function userCliRoutes(app: FastifyInstance) {
 
       // Validar corpo da solicitação
       const bodySchema = z.object({
-        email: z.string().optional(),
+        email: z.string().email().optional(), // Validar se é um email válido
         nome: z.string().optional(),
-        telefone: z.string().optional(),
+        senha: z.string().optional(),
+        cpf: z.number().optional(),
+        telefone: z.number().optional(),
       })
-      const { email, nome, telefone } = bodySchema.parse(request.body)
+      const { email, nome, telefone, cpf, senha } = bodySchema.parse(
+        request.body,
+      )
 
       // Atualizar o usuário com base no ID fornecido
       const updatedUser = await prisma.userCliente.update({
@@ -119,6 +153,8 @@ export async function userCliRoutes(app: FastifyInstance) {
           email,
           nome,
           telefone,
+          cpf,
+          senha,
         },
       })
 

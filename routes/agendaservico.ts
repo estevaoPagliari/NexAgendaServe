@@ -5,11 +5,12 @@ import { z } from 'zod'
 export async function agendaservicoRoutes(app: FastifyInstance) {
   app.get('/agendaservico', async (request, reply) => {
     try {
-      const users = await prisma.agendamento.findMany({
+      const users = await prisma.agenda.findMany({
         include: {
-          tiposservicos: true,
-          usercliente: true,
-          userestabelecimento: true,
+          TipoServico: true,
+          Estabelecimento: true,
+          Recurso: true,
+          Cliente: true,
         },
       })
       return reply.code(200).send(users)
@@ -37,14 +38,15 @@ export async function agendaservicoRoutes(app: FastifyInstance) {
       }
 
       // Buscar o usuário no banco de dados
-      const usercliente = await prisma.agendamento.findUnique({
+      const usercliente = await prisma.agenda.findUnique({
         where: {
           id,
         },
         include: {
-          tiposservicos: true,
-          usercliente: true,
-          userestabelecimento: true,
+          TipoServico: true,
+          Estabelecimento: true,
+          Recurso: true,
+          Cliente: true,
         },
       })
 
@@ -66,21 +68,37 @@ export async function agendaservicoRoutes(app: FastifyInstance) {
     try {
       // Validar o corpo da solicitação
       const bodySchema = z.object({
-        dia: z.string(), // Validar se é um email válido
-        mes: z.string(),
-        horario: z.date(),
-        userEstabelecimentoId: z.string(),
-        tipoServicoId: z.string(),
-        userclienteId: z.string(),
+        dia: z.number(), // Validar se é um email válido
+        mes: z.number(),
+        ano: z.number(),
+        horario: z.string(),
+        estabelecimentoId: z.number(),
+        tipoServicoId: z.number(),
+        clienteId: z.number(),
+        recursoId: z.number(),
       })
-      const { dia, mes, horario } = bodySchema.parse(request.body)
+      const {
+        dia,
+        mes,
+        ano,
+        horario,
+        estabelecimentoId,
+        tipoServicoId,
+        clienteId,
+        recursoId,
+      } = bodySchema.parse(request.body)
 
       // Criar um novo usuário no banco de dados
-      const newUser = await prisma.agendamento.create({
+      const newUser = await prisma.agenda.create({
         data: {
           dia,
           mes,
+          ano,
           horario,
+          estabelecimentoId,
+          tipoServicoId,
+          clienteId,
+          recursoId,
         },
       })
 

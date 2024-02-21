@@ -10,21 +10,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Define o modelo para a entidade UsuarioEmpresa
+// Tabela User Estabelecimento
 model UserEstabelecimento {
-  id          Int           @id @default(autoincrement())
-  nome        String
-  email       String        @unique
-  senha       String
-  cpf         Int           @unique
-  telefone    Int
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  Endereco    Endereco[]
-  TipoServico TipoServico[]
+  id                   Int                    @id @default(autoincrement())
+  nome                 String
+  email                String                 @unique
+  senha                String
+  cpf                  Int                    @unique
+  telefone             Int
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  Endereco             Endereco[]
+  TipoServico          TipoServico[]
+  Recursos             Recurso[]
+  Agenda               Agenda[]
+  HorarioFuncionamento HorarioFuncionamento[]
 }
 
-// Define o modelo para a entidade Endereco
+// Tabela Recurso
+model Recurso {
+  id                Int                 @id @default(autoincrement())
+  nome              String
+  estabelecimentoId Int
+  Estabelecimento   UserEstabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  Agenda            Agenda[]
+}
+
+// Tabela User Cliente
+model UserCliente {
+  id        Int        @id @default(autoincrement())
+  nome      String
+  email     String     @unique
+  senha     String
+  cpf       Int        @unique
+  telefone  Int
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Endereco  Endereco[]
+  Agenda    Agenda[]
+}
+
+// Tabela Endereco
 model Endereco {
   id               Int                  @id @default(autoincrement())
   estado           String
@@ -34,14 +60,45 @@ model Endereco {
   complemento      String?
   cep              String
   usuarioEmpresaId Int?
-  UsuarioEmpresa   UserEstabelecimento? @relation(fields: [usuarioEmpresaId], references: [id])
+  clienteId        Int?
+  UsuarioEmpresa   UserEstabelecimento? @relation(fields: [usuarioEmpresaId], references: [id], onDelete: Cascade)
+  Cliente          UserCliente?         @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }
 
-// Define o modelo para a entidade Tipo Servico
+// Tabela TipoServico
 model TipoServico {
   id                    Int                 @id @default(autoincrement())
   nome                  String
   tempoServico          Int
   UserEstabelecimentoId Int
-  UserEstabelecimento   UserEstabelecimento @relation(fields: [UserEstabelecimentoId], references: [id])
+  UserEstabelecimento   UserEstabelecimento @relation(fields: [UserEstabelecimentoId], references: [id], onDelete: Cascade)
+  Agenda                Agenda[]
+}
+
+// Tabela Agenda
+model Agenda {
+  id                Int                 @id @default(autoincrement())
+  dia               Int
+  mes               Int
+  ano               Int
+  horario           String
+  tipoServicoId     Int
+  estabelecimentoId Int
+  clienteId         Int
+  recursoId         Int
+  TipoServico       TipoServico         @relation(fields: [tipoServicoId], references: [id])
+  Estabelecimento   UserEstabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  Cliente           UserCliente         @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  Recurso           Recurso             @relation(fields: [recursoId], references: [id])
+}
+
+// Tabela Horario Funcionamento
+model HorarioFuncionamento {
+  id                  Int                 @id @default(autoincrement())
+  horarioAbertura     String
+  horarioAlmocoInicio String
+  horarioAlmocoFim    String
+  horarioFechamento   String
+  estabelecimentoId   Int
+  Estabelecimento     UserEstabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
 }
