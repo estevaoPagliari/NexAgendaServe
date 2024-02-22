@@ -5,7 +5,7 @@ import { userEstRoutes } from '../routes/userestabelecimento'
 import { userCliRoutes } from '../routes/usercliente'
 import { tiposervicoRoutes } from '../routes/tiposservico'
 import { recursoRoutes } from '../routes/recurso'
-// import { agendaservicoRoutes } from '../routes/agendaservico'
+import { agendaservicoRoutes } from '../routes/agendaservico'
 // Importe o fastify-cors
 
 interface Appointment {
@@ -95,7 +95,7 @@ app.register(userEstRoutes)
 app.register(userCliRoutes)
 app.register(tiposervicoRoutes)
 app.register(recursoRoutes)
-// app.register(agendaservicoRoutes)
+app.register(agendaservicoRoutes)
 
 const options: RouteShorthandOptions = {
   schema: {
@@ -122,6 +122,10 @@ const getAppointmentsHandler: RouteHandlerMethod = async (request, reply) => {
 }
 
 app.get('/api/appointments/:dia/:mes', options, getAppointmentsHandler)
+
+app.get('/', async () => {
+  return 'Funcionando'
+})
 
 app
   .listen({
