@@ -6,6 +6,7 @@ import { userCliRoutes } from '../routes/usercliente'
 import { tiposervicoRoutes } from '../routes/tiposservico'
 import { recursoRoutes } from '../routes/recurso'
 import { agendaservicoRoutes } from '../routes/agendaservico'
+import { horFunRoutes } from '../routes/horariofuncionamento'
 // Importe o fastify-cors
 
 interface Appointment {
@@ -96,6 +97,7 @@ app.register(userCliRoutes)
 app.register(tiposervicoRoutes)
 app.register(recursoRoutes)
 app.register(agendaservicoRoutes)
+app.register(horFunRoutes)
 
 const options: RouteShorthandOptions = {
   schema: {
