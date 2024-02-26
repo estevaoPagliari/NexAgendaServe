@@ -64,6 +64,43 @@ export async function agendaservicoRoutes(app: FastifyInstance) {
     }
   })
 
+  app.get(
+    '/agendaservicodiaestabelecimento/:id/:dia/:mes',
+    async (request, reply) => {
+      try {
+        const querySchema = z.object({
+          id: z.string(),
+          dia: z.string(),
+          mes: z.string(),
+        })
+
+        // Validar parâmetros da solicitação presentes na query da URL
+        const { id, dia, mes } = querySchema.parse(request.params)
+
+        const agendas = await prisma.agenda.findMany({
+          where: {
+            estabelecimentoId: parseInt(id),
+            dia: parseInt(dia),
+            mes: parseInt(mes),
+          },
+          include: {
+            TipoServico: true,
+            Estabelecimento: true,
+            Recurso: true,
+            Cliente: true,
+          },
+        })
+
+        return reply.code(200).send(agendas)
+      } catch (error) {
+        console.error('Erro ao buscar agendas de serviço:', error)
+        return reply
+          .code(500)
+          .send({ message: 'Erro ao buscar agendas de serviço.' })
+      }
+    },
+  )
+
   app.post('/agendaservico', async (request, reply) => {
     try {
       // Validar o corpo da solicitação

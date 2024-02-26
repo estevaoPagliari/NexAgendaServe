@@ -63,6 +63,14 @@ const appointments: Appointment[] = [
   {
     dia: '15',
     mes: '2',
+    time: '17:00',
+    clientName: 'Camila Maria De Sousa',
+    service: 'Barba',
+    timeservice: '30',
+  },
+  {
+    dia: '15',
+    mes: '2',
     time: '18:00',
     clientName: 'Yuri',
     service: 'Corte e Barba',
