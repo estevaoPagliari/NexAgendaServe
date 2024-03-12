@@ -6,6 +6,7 @@ export async function userEstRoutes(app: FastifyInstance) {
   // get geral
   app.get('/userestabelecimento', async (request, reply) => {
     try {
+      // await request.jwtVerify()
       const users = await prisma.userEstabelecimento.findMany({
         include: {
           Endereco: true,
